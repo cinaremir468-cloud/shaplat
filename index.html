@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shaplat - Keşif Platformu</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
         * {
             margin: 0;
@@ -41,15 +41,47 @@
             --text-muted: #64748b;
         }
 
+        :root[data-theme="cyberpunk"] {
+            --primary: #00ffff;
+            --secondary: #ff00ff;
+            --success: #00ff41;
+            --danger: #ff0080;
+            --warning: #ffff00;
+            --dark: #0a0014;
+            --darker: #050008;
+            --card: #1a0033;
+            --border: #ff00ff;
+            --text: #00ffff;
+            --text-muted: #9d4edd;
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
             background: var(--dark);
             color: var(--text);
             overflow-x: hidden;
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Modern Scrollbar */
+        [data-theme="cyberpunk"] {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        [data-theme="cyberpunk"] body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(0deg, rgba(255, 0, 255, 0.03) 0px, transparent 2px),
+                repeating-linear-gradient(90deg, rgba(0, 255, 255, 0.03) 0px, transparent 2px);
+            background-size: 4px 4px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -69,11 +101,6 @@
             background: var(--primary);
         }
 
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: var(--border) transparent;
-        }
-
         .bg-gradient {
             position: fixed;
             width: 100%;
@@ -89,6 +116,11 @@
             border-radius: 50%;
             filter: blur(120px);
             animation: float 20s infinite ease-in-out;
+        }
+
+        [data-theme="cyberpunk"] .gradient-orb {
+            filter: blur(100px);
+            box-shadow: 0 0 100px currentColor;
         }
 
         .orb-1 {
@@ -125,7 +157,12 @@
             padding: 20px 0;
             overflow-y: auto;
             z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="cyberpunk"] .sidebar {
+            border-right: 2px solid var(--border);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
         }
 
         .logo-container {
@@ -142,10 +179,25 @@
             letter-spacing: -1px;
         }
 
+        [data-theme="cyberpunk"] .logo {
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--secondary);
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
         .theme-toggle {
             display: flex;
+            gap: 8px;
             justify-content: center;
             margin: 15px 20px;
+            flex-wrap: wrap;
         }
 
         .theme-btn {
@@ -156,13 +208,21 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             transition: all 0.3s;
+            flex: 1;
+            min-width: 70px;
         }
 
         .theme-btn:hover {
             background: var(--primary);
             color: white;
+            transform: translateY(-2px);
+        }
+
+        [data-theme="cyberpunk"] .theme-btn {
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .sidebar-section {
@@ -222,6 +282,10 @@
             height: 100%;
         }
 
+        [data-theme="cyberpunk"] .nav-item.active {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
         .notification-badge {
             background: var(--danger);
             color: white;
@@ -260,33 +324,6 @@
             height: 5px;
             border-radius: 50%;
             background: var(--primary);
-        }
-
-        .active-filters {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin: 15px;
-            font-size: 0.8rem;
-        }
-
-        .filter-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin: 3px;
-        }
-
-        .filter-remove {
-            cursor: pointer;
-            font-weight: 900;
         }
 
         .user-section {
@@ -330,6 +367,103 @@
             min-height: 100vh;
         }
 
+        .search-container {
+            max-width: 650px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        [data-theme="cyberpunk"] .search-input {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        [data-theme="cyberpunk"] .search-input:focus {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        [data-theme="cyberpunk"] .search-results {
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+
+        .search-result-item {
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--darker);
+            transform: translateX(5px);
+        }
+
+        .search-result-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .search-result-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
         .content-display {
             max-width: 650px;
             margin: 0 auto;
@@ -340,35 +474,33 @@
             border: 1px solid var(--border);
             border-radius: 18px;
             overflow: hidden;
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="cyberpunk"] .content-card {
+            border: 2px solid var(--border);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
         }
 
         .content-card.fade-out {
-            animation: fadeOut 0.3s ease-out forwards;
+            opacity: 0;
+            transform: scale(0.95) rotateX(5deg);
         }
 
         .content-card.fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
+        @keyframes fadeInScale {
+            0% {
                 opacity: 0;
-                transform: scale(0.95);
+                transform: scale(0.9) translateY(30px) rotateX(10deg);
             }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(20px);
-            }
-            to {
+            100% {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: scale(1) translateY(0) rotateX(0);
             }
         }
 
@@ -376,6 +508,11 @@
             width: 100%;
             height: 220px;
             object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .content-card:hover .content-image {
+            transform: scale(1.05);
         }
 
         .content-body {
@@ -399,6 +536,10 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        [data-theme="cyberpunk"] .content-category {
+            box-shadow: 0 0 15px var(--primary);
         }
 
         .content-stats {
@@ -468,9 +609,9 @@
             transform: translateY(-2px);
         }
 
-        .tag.selected {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+        [data-theme="cyberpunk"] .tag {
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .rating-box {
@@ -528,6 +669,10 @@
             transform: scale(1.15);
         }
 
+        [data-theme="cyberpunk"] .star.active {
+            text-shadow: 0 0 10px var(--warning);
+        }
+
         .content-actions {
             display: flex;
             gap: 8px;
@@ -568,12 +713,47 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .shaplat-button-container {
+        [data-theme="cyberpunk"] .btn-primary {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        }
+
+        .shaplat-controls {
             display: flex;
             justify-content: center;
+            gap: 10px;
             margin-top: 16px;
             padding-top: 16px;
             border-top: 1px solid var(--border);
+        }
+
+        .btn-undo {
+            background: var(--darker);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 14px 25px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-undo:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .btn-undo:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-shaplat {
@@ -599,6 +779,73 @@
             box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
         }
 
+        [data-theme="cyberpunk"] .btn-shaplat {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(255, 0, 255, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .btn-shaplat:hover {
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.8), 0 0 80px rgba(255, 0, 255, 0.5);
+        }
+
+        .heart-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: heartBurst 1s ease-out forwards;
+        }
+
+        @keyframes heartBurst {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(var(--tx), var(--ty)) scale(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) scale(0);
+            }
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            z-index: 1000;
+            display: none;
+        }
+
+        .keyboard-hint.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
         .trends-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -611,48 +858,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .filters-bar {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 25px;
-        }
-
-        .filters-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        .filter-label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .filter-select {
-            width: 100%;
-            padding: 9px 12px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.85rem;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
         }
 
         .trends-grid {
@@ -675,6 +880,10 @@
             transform: translateY(-6px);
             border-color: var(--primary);
             box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .trend-card:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
         }
 
         .trend-rank {
@@ -972,11 +1181,6 @@
             background: white;
             color: #333;
             font-weight: 700;
-        }
-
-        .btn-anonymous {
-            background: var(--darker);
-            color: var(--text);
         }
 
         .auth-switch {
@@ -1309,6 +1513,16 @@
             .section-header {
                 font-size: 1.6rem;
             }
+
+            .shaplat-controls {
+                flex-direction: column;
+            }
+
+            .btn-shaplat,
+            .btn-undo {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .section {
@@ -1363,13 +1577,14 @@
     </div>
 
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    <div class="keyboard-hint" id="keyboard-hint"></div>
 
     <div id="app"></div>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, increment, query, where, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, increment, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyA3RDxe5y6p26adzao5aY8Dw-S4mFz_2GQ",
@@ -1400,6 +1615,7 @@
             sortBy: 'rating',
             currentContent: null,
             contents: [],
+            contentHistory: [],
             categories: [
                 'Web Siteleri',
                 'Video İçerikler',
@@ -1422,12 +1638,12 @@
             editingContentId: null,
             notifications: [],
             searchQuery: '',
+            searchResults: [],
             auth,
             db,
             isFirebaseConfigured
         };
 
-        // Mobile swipe için değişkenler
         let touchStartX = 0;
         let touchEndX = 0;
 
@@ -1457,12 +1673,10 @@
                         }
                         await renderApp();
                     } else {
-                        // Misafir olarak otomatik giriş
                         await handleAnonymousAuth();
                     }
                 });
             } else {
-                // Local mod - misafir olarak gir
                 const savedUser = sessionStorage.getItem('currentUser');
                 if (savedUser) {
                     window.shaplatState.currentUser = JSON.parse(savedUser);
@@ -1480,13 +1694,78 @@
                 }
                 renderApp();
             }
+
+            setupKeyboardShortcuts();
         }
 
-        window.toggleTheme = function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                const key = e.key.toLowerCase();
+                
+                if (key === ' ' || key === 'spacebar') {
+                    e.preventDefault();
+                    shaplatRandom();
+                    showKeyboardHint('Space: SHAPLAT');
+                } else if (key === 'arrowleft') {
+                    e.preventDefault();
+                    undoShaplat();
+                    showKeyboardHint('← Geri Al');
+                } else if (key === 'arrowright') {
+                    e.preventDefault();
+                    shaplatRandom();
+                    showKeyboardHint('→ İleri');
+                } else if (key === 'f') {
+                    e.preventDefault();
+                    if (window.shaplatState.currentContent) {
+                        toggleFavorite(window.shaplatState.currentContent.id);
+                        showKeyboardHint('F: Favori');
+                    }
+                } else if (key === 's') {
+                    e.preventDefault();
+                    if (window.shaplatState.currentContent) {
+                        shareContent(window.shaplatState.currentContent.id);
+                        showKeyboardHint('S: Paylaş');
+                    }
+                } else if (['1', '2', '3', '4', '5'].includes(key)) {
+                    e.preventDefault();
+                    if (window.shaplatState.currentContent) {
+                        rateContent(window.shaplatState.currentContent.id, parseInt(key));
+                        showKeyboardHint(`${key} ⭐ Rating`);
+                    }
+                } else if (key === 'escape') {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar && sidebar.classList.contains('mobile-active')) {
+                        sidebar.classList.remove('mobile-active');
+                        showKeyboardHint('Esc: Menü Kapalı');
+                    }
+                }
+            });
+        }
+
+        function showKeyboardHint(text) {
+            const hint = document.getElementById('keyboard-hint');
+            hint.textContent = text;
+            hint.classList.add('show');
+            setTimeout(() => {
+                hint.classList.remove('show');
+            }, 1500);
+        }
+
+        window.toggleTheme = function(theme) {
+            if (!theme) {
+                const themes = ['dark', 'light', 'cyberpunk'];
+                const current = document.documentElement.getAttribute('data-theme');
+                const currentIndex = themes.indexOf(current);
+                theme = themes[(currentIndex + 1) % themes.length];
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.style.opacity = btn.dataset.theme === theme ? '1' : '0.6';
+            });
         };
 
         function showAuthModal(mode) {
@@ -1498,7 +1777,7 @@
                             <p style="color: var(--text-muted); font-weight: 600;">Shaplat'a hoş geldiniz!</p>
                         </div>
 
-                        ${isFirebaseConfigured ? '' : '<div class="firebase-warning">⚠️ Firebase yapılandırılmamış. Google girişi çalışmayabilir. Firebase Console\'da domain ekleyin: shaplat-af37d.firebaseapp.com</div>'}
+                        ${isFirebaseConfigured ? '' : '<div class="firebase-warning">⚠️ Firebase yapılandırılmamış. Google girişi çalışmayabilir.</div>'}
 
                         <div>
                             <div class="form-group">
@@ -1694,8 +1973,14 @@
                     </div>
 
                     <div class="theme-toggle">
-                        <button class="theme-btn" onclick="toggleTheme()">
-                            ${document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️ Light' : '🌙 Dark'} Mode
+                        <button class="theme-btn" data-theme="dark" onclick="toggleTheme('dark')" style="opacity: ${document.documentElement.getAttribute('data-theme') === 'dark' ? '1' : '0.6'}">
+                            🌙 Dark
+                        </button>
+                        <button class="theme-btn" data-theme="light" onclick="toggleTheme('light')" style="opacity: ${document.documentElement.getAttribute('data-theme') === 'light' ? '1' : '0.6'}">
+                            ☀️ Light
+                        </button>
+                        <button class="theme-btn" data-theme="cyberpunk" onclick="toggleTheme('cyberpunk')" style="opacity: ${document.documentElement.getAttribute('data-theme') === 'cyberpunk' ? '1' : '0.6'}">
+                            🔮 Cyber
                         </button>
                     </div>
 
@@ -1746,18 +2031,6 @@
                         `).join('')}
                     </div>
 
-                    ${window.shaplatState.selectedTags.length > 0 ? `
-                    <div class="active-filters">
-                        <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted);">Aktif Etiketler</div>
-                        ${window.shaplatState.selectedTags.map(tag => `
-                            <span class="filter-tag">
-                                #${tag}
-                                <span class="filter-remove" onclick="removeTagFilter('${tag}')">×</span>
-                            </span>
-                        `).join('')}
-                    </div>
-                    ` : ''}
-
                     <div class="user-section">
                         <div class="user-card" onclick="showSection('profile')">
                             <div class="user-avatar">${window.shaplatState.currentUser.name[0].toUpperCase()}</div>
@@ -1773,6 +2046,13 @@
 
                 <div class="main-content">
                     <div id="random" class="section active">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" class="search-input" id="global-search" placeholder="🔍 İçerik ara (başlık, açıklama, etiket)..." oninput="handleSearch(event)">
+                                <div class="search-icon">🔎</div>
+                                <div class="search-results" id="search-results"></div>
+                            </div>
+                        </div>
                         <div class="content-display" id="random-content">
                             <div class="loading-spinner">Yükleniyor...</div>
                         </div>
@@ -1788,18 +2068,6 @@
                     <div id="favorites" class="section">
                         <div class="trends-container">
                             <h2 class="section-header">❤️ Favoriler</h2>
-                            <div class="filters-bar">
-                                <div class="filters-row">
-                                    <div class="filter-group">
-                                        <label class="filter-label">Sıralama</label>
-                                        <select class="filter-select" id="favorites-sort" onchange="renderFavorites()">
-                                            <option value="rating">⭐ Puana Göre</option>
-                                            <option value="favorites">❤️ Beğeniye Göre</option>
-                                            <option value="views">👁️ Görüntülenmeye Göre</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="trends-grid" id="favorites-list"></div>
                         </div>
                     </div>
@@ -1877,13 +2145,13 @@
                                 özenle seçilmiş içerikleri sizlerle buluşturuyoruz. Her tıklamada yeni bir keşif, her keşifte yeni bir ilham!
                             </p>
                             <p class="info-text">
-                                <strong>Nasıl Çalışır?</strong><br>
-                                SHAPLAT butonuna tıklayın ve algoritmanın sizin için seçtiği rastgele bir içeriği keşfedin. 
-                                Beğendiklerinizi favorilere ekleyin, değerlendirin ve keşfetmeye devam edin.
-                            </p>
-                            <p class="info-text">
-                                <strong>Misyonumuz:</strong> İnternetin gizli kalmış incilerini gün yüzüne çıkarmak ve kullanıcılarımızın 
-                                dijital deneyimini zenginleştirmek.
+                                <strong>Klavye Kısayolları:</strong><br>
+                                • Space: SHAPLAT<br>
+                                • ← →: Geri/İleri<br>
+                                • F: Favoriye ekle<br>
+                                • S: Paylaş<br>
+                                • 1-5: Rating ver<br>
+                                • Esc: Menüyü kapat
                             </p>
                         </div>
                     </div>
@@ -1941,7 +2209,6 @@
                 </div>
             `;
 
-            // Mobile swipe desteği ekle
             const sidebar = document.getElementById('sidebar');
             sidebar.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
@@ -1952,7 +2219,14 @@
                 handleSwipe();
             }, {passive: true});
 
-            // İlk içeriği yükle
+            document.addEventListener('click', (e) => {
+                const searchResults = document.getElementById('search-results');
+                const searchBox = document.querySelector('.search-box');
+                if (searchResults && !searchBox.contains(e.target)) {
+                    searchResults.classList.remove('active');
+                }
+            });
+
             await shaplatRandom();
             
             renderTrends();
@@ -1967,13 +2241,51 @@
 
         function handleSwipe() {
             if (touchEndX < touchStartX - 50) {
-                // Sola kaydırma - menüyü kapat
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar.classList.contains('mobile-active')) {
                     sidebar.classList.remove('mobile-active');
                 }
             }
         }
+
+        window.handleSearch = function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('search-results');
+            
+            if (query.length < 2) {
+                resultsContainer.classList.remove('active');
+                return;
+            }
+
+            const results = window.shaplatState.contents.filter(c => 
+                c.title.toLowerCase().includes(query) ||
+                c.description.toLowerCase().includes(query) ||
+                c.tags.some(tag => tag.toLowerCase().includes(query)) ||
+                c.category.toLowerCase().includes(query)
+            ).slice(0, 8);
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="empty-state"><h3>Sonuç bulunamadı</h3></div>';
+                resultsContainer.classList.add('active');
+                return;
+            }
+
+            resultsContainer.innerHTML = results.map(content => `
+                <div class="search-result-item" onclick="viewContentFromSearch('${content.id}')">
+                    <div class="search-result-title">${content.title}</div>
+                    <div class="search-result-meta">
+                        ${content.category} • ⭐ ${(content.rating || 0).toFixed(1)} • 👁️ ${content.viewCount || 0}
+                    </div>
+                </div>
+            `).join('');
+            resultsContainer.classList.add('active');
+        };
+
+        window.viewContentFromSearch = async function(contentId) {
+            document.getElementById('search-results').classList.remove('active');
+            document.getElementById('global-search').value = '';
+            await viewContent(contentId);
+        };
 
         async function loadContents() {
             if (isFirebaseConfigured) {
@@ -2090,7 +2402,6 @@
                     JSON.stringify(window.shaplatState.notifications));
                 renderNotifications();
                 
-                // Badge'i güncelle
                 const badge = document.querySelector('.notification-badge');
                 const unreadCount = window.shaplatState.notifications.filter(n => !n.read).length;
                 if (badge) {
@@ -2110,7 +2421,6 @@
             document.getElementById(section).classList.add('active');
             event.target.classList.add('active');
 
-            // Mobilde menüyü kapat
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
                 sidebar.classList.remove('mobile-active');
@@ -2124,7 +2434,6 @@
         window.selectCategory = function(category) {
             window.shaplatState.selectedCategory = category;
             
-            // Kategorileri güncelle
             document.querySelectorAll('.category-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -2139,65 +2448,38 @@
                 window.shaplatState.selectedTags.push(tag);
             }
             
-            // Tag'ları görsel olarak güncelle
             event.target.classList.toggle('selected');
-            
-            // Filtreleri güncelle
-            updateActiveFilters();
         };
 
-        window.removeTagFilter = function(tag) {
-            window.shaplatState.selectedTags = window.shaplatState.selectedTags.filter(t => t !== tag);
-            
-            // Tag'ları görsel olarak güncelle
-            const tags = document.querySelectorAll('.tag');
-            tags.forEach(t => {
-                if (t.textContent.includes(tag)) {
-                    t.classList.remove('selected');
-                }
-            });
-            
-            updateActiveFilters();
-        };
-
-        function updateActiveFilters() {
-            const filtersContainer = document.querySelector('.active-filters');
-            if (window.shaplatState.selectedTags.length > 0) {
-                if (!filtersContainer) {
-                    const sidebarSections = document.querySelector('.sidebar-section:last-of-type');
-                    const filterHTML = `
-                        <div class="active-filters">
-                            <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted);">Aktif Etiketler</div>
-                            ${window.shaplatState.selectedTags.map(tag => `
-                                <span class="filter-tag">
-                                    #${tag}
-                                    <span class="filter-remove" onclick="removeTagFilter('${tag}')">×</span>
-                                </span>
-                            `).join('')}
-                        </div>
-                    `;
-                    sidebarSections.insertAdjacentHTML('afterend', filterHTML);
-                } else {
-                    const tagsHTML = window.shaplatState.selectedTags.map(tag => `
-                        <span class="filter-tag">
-                            #${tag}
-                            <span class="filter-remove" onclick="removeTagFilter('${tag}')">×</span>
-                        </span>
-                    `).join('');
-                    filtersContainer.innerHTML = `
-                        <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted);">Aktif Etiketler</div>
-                        ${tagsHTML}
-                    `;
-                }
-            } else if (filtersContainer) {
-                filtersContainer.remove();
+        window.undoShaplat = async function() {
+            if (window.shaplatState.contentHistory.length === 0) {
+                showNotification('⚠️ Geri alınacak içerik yok!');
+                return;
             }
-        }
 
-        window.shaplatRandom = async function() {
             const contentCard = document.querySelector('.content-card');
             
-            // Fade out animasyonu
+            if (contentCard) {
+                contentCard.classList.add('fade-out');
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            const previousContent = window.shaplatState.contentHistory.pop();
+            displayContent(previousContent);
+            showNotification('↩️ Önceki içeriğe dönüldü');
+        };
+
+        window.shaplatRandom = async function() {
+            if (window.shaplatState.currentContent) {
+                window.shaplatState.contentHistory.push(window.shaplatState.currentContent);
+                
+                if (window.shaplatState.contentHistory.length > 10) {
+                    window.shaplatState.contentHistory.shift();
+                }
+            }
+
+            const contentCard = document.querySelector('.content-card');
+            
             if (contentCard) {
                 contentCard.classList.add('fade-out');
                 await new Promise(resolve => setTimeout(resolve, 300));
@@ -2239,10 +2521,7 @@
                 localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
             }
             
-            // Yeni içeriği göster
             displayContent(randomContent);
-            
-            // Stats'ı güncelle
             updateProfileStats();
         };
 
@@ -2317,7 +2596,7 @@
                                 🚀 Ziyaret Et
                             </button>
                             <button class="btn ${isFavorite ? 'btn-outline' : 'btn-success'}" 
-                                    onclick="toggleFavorite('${content.id}')">
+                                    onclick="toggleFavorite('${content.id}', event)">
                                 ${isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle'}
                             </button>
                             <button class="btn btn-outline" onclick="shareContent('${content.id}')">
@@ -2325,7 +2604,10 @@
                             </button>
                         </div>
 
-                        <div class="shaplat-button-container">
+                        <div class="shaplat-controls">
+                            <button class="btn-undo" onclick="undoShaplat()" ${window.shaplatState.contentHistory.length === 0 ? 'disabled' : ''}>
+                                ↩️ Geri Al
+                            </button>
                             <button class="btn-shaplat" onclick="shaplatRandom()">
                                 👏 SHAPLAT!
                             </button>
@@ -2367,7 +2649,6 @@
 
             showNotification(`✅ ${rating} yıldız verdiniz!`);
             
-            // Sadece yıldızları güncelle
             const stars = document.querySelectorAll('.star');
             stars.forEach((star, index) => {
                 if (index < rating) {
@@ -2377,13 +2658,11 @@
                 }
             });
 
-            // Rating sayılarını güncelle
             document.querySelector('.rating-number').textContent = content.rating.toFixed(1);
             document.querySelector('.rating-count').textContent = `${content.ratingCount} değerlendirme`;
         };
 
-        window.toggleFavorite = async function(contentId) {
-            // Misafir kontrolü
+        window.toggleFavorite = async function(contentId, event) {
             if (window.shaplatState.currentUser.anonymous) {
                 showNotification('⚠️ Favorilere eklemek için giriş yapın!');
                 showAuthModal('login');
@@ -2405,6 +2684,10 @@
                 window.shaplatState.currentUser.favoriteCount = (window.shaplatState.currentUser.favoriteCount || 0) + 1;
                 showNotification('❤️ Favorilere eklendi!');
                 addNotification(`"${content.title}" favorilerinize eklendi!`, 'favorite');
+                
+                if (event) {
+                    createHeartBurst(event.clientX, event.clientY);
+                }
             }
 
             localStorage.setItem('userFavorites', JSON.stringify(userFavorites));
@@ -2425,13 +2708,11 @@
                 localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
             }
 
-            // Butonu güncelle
-            const favoriteBtn = event.target;
+            const favoriteBtn = event.target.closest('button');
             const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === contentId);
             favoriteBtn.className = isFavorite ? 'btn btn-outline' : 'btn btn-success';
             favoriteBtn.innerHTML = isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle';
 
-            // Stats'ı güncelle
             const stats = document.querySelectorAll('.stat');
             stats.forEach(stat => {
                 if (stat.textContent.includes('❤️')) {
@@ -2441,6 +2722,28 @@
 
             renderFavorites();
         };
+
+        function createHeartBurst(x, y) {
+            const burst = document.createElement('div');
+            burst.className = 'heart-burst';
+            burst.style.left = x + 'px';
+            burst.style.top = y + 'px';
+
+            for (let i = 0; i < 12; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                heart.textContent = '❤️';
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 80 + Math.random() * 40;
+                heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                heart.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                heart.style.animationDelay = Math.random() * 0.2 + 's';
+                burst.appendChild(heart);
+            }
+
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 1000);
+        }
 
         window.shareContent = function(contentId) {
             const content = window.shaplatState.contents.find(c => c.id === contentId);
@@ -2482,7 +2785,6 @@
         }
 
         window.renderFavorites = function() {
-            // Misafir kontrolü
             if (window.shaplatState.currentUser.anonymous) {
                 document.getElementById('favorites-list').innerHTML = `
                     <div class="empty-state">
@@ -2501,15 +2803,7 @@
                 .map(f => window.shaplatState.contents.find(c => c.id === f.contentId))
                 .filter(c => c);
 
-            const sortBy = document.getElementById('favorites-sort') ? document.getElementById('favorites-sort').value : 'rating';
-
-            if (sortBy === 'rating') {
-                favoriteContents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-            } else if (sortBy === 'favorites') {
-                favoriteContents.sort((a, b) => (b.favoriteCount || 0) - (a.favoriteCount || 0));
-            } else if (sortBy === 'views') {
-                favoriteContents.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
-            }
+            favoriteContents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
             document.getElementById('favorites-list').innerHTML = favoriteContents.length > 0 ? favoriteContents.map(content => `
                 <div class="trend-card" onclick="viewContent('${content.id}')">
@@ -2546,11 +2840,17 @@
             
             showSection('random');
             
-            // Fade animasyonu
             const contentCard = document.querySelector('.content-card');
             if (contentCard) {
                 contentCard.classList.add('fade-out');
                 await new Promise(resolve => setTimeout(resolve, 300));
+            }
+            
+            if (window.shaplatState.currentContent) {
+                window.shaplatState.contentHistory.push(window.shaplatState.currentContent);
+                if (window.shaplatState.contentHistory.length > 10) {
+                    window.shaplatState.contentHistory.shift();
+                }
             }
             
             displayContent(content);
@@ -2580,7 +2880,6 @@
 
             showNotification('✅ Profil güncellendi!');
             
-            // İsmi güncelle
             document.querySelector('.profile-name').textContent = name;
             document.querySelector('.user-card div div:first-child').textContent = name;
             document.querySelector('.user-avatar').textContent = name[0].toUpperCase();
@@ -2607,7 +2906,6 @@
             document.getElementById('sidebar').classList.toggle('mobile-active');
         };
 
-        // Admin Functions
         function updateAdminStats() {
             if (window.shaplatState.currentUser.role !== 'admin') return;
             
@@ -2708,15 +3006,10 @@
                         <strong>📝 Format:</strong>
                         Her satıra bir içerik yazın. Alanları | (pipe) işareti ile ayırın:
                         <div class="format-example">Başlık|Açıklama|https://url.com|https://image-url.com|Kategori|etiket1,etiket2,etiket3</div>
-                        <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.8rem;">
-                            💡 <strong>Önemli:</strong> Etiketleri virgül ile ayırın. Kategori var olan kategorilerden biri olmalı. Aynı URL'den sadece bir içerik eklenebilir.
-                        </div>
                     </div>
 
                     <div class="bulk-import-area">
-                        <textarea id="bulk-input" class="bulk-textarea" placeholder="Poolside FM|Nostaljik yaz hissi veren chill müzik radyosu.|https://poolside.fm|https://example.com/image.jpg|Müzik|müzik,rahatlatıcı,radyo
-Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://example.com/noisli.jpg|Araçlar & Uygulamalar|ses,odaklanma,rahatlatıcı
-..."></textarea>
+                        <textarea id="bulk-input" class="bulk-textarea" placeholder="Poolside FM|Nostaljik yaz hissi veren chill müzik radyosu.|https://poolside.fm|https://example.com/image.jpg|Müzik|müzik,rahatlatıcı,radyo"></textarea>
                     </div>
 
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
@@ -2746,7 +3039,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
             let errorCount = 0;
             const errors = [];
 
-            // Mevcut URL'leri kontrol et
             const existingUrls = window.shaplatState.contents.map(c => c.url.toLowerCase());
 
             for (let i = 0; i < lines.length; i++) {
@@ -2755,7 +3047,7 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
 
                 if (parts.length !== 6) {
                     errorCount++;
-                    errors.push(`Satır ${i + 1}: Yanlış format (6 alan olmalı)`);
+                    errors.push(`Satır ${i + 1}: Yanlış format`);
                     continue;
                 }
 
@@ -2767,16 +3059,15 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                     continue;
                 }
 
-                // URL kontrolü
                 if (existingUrls.includes(url.toLowerCase())) {
                     errorCount++;
-                    errors.push(`Satır ${i + 1}: Bu URL zaten kayıtlı: ${url}`);
+                    errors.push(`Satır ${i + 1}: URL kayıtlı`);
                     continue;
                 }
 
                 if (!window.shaplatState.categories.includes(category)) {
                     errorCount++;
-                    errors.push(`Satır ${i + 1}: Geçersiz kategori "${category}"`);
+                    errors.push(`Satır ${i + 1}: Geçersiz kategori`);
                     continue;
                 }
 
@@ -2784,7 +3075,7 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
 
                 if (tags.length === 0) {
                     errorCount++;
-                    errors.push(`Satır ${i + 1}: En az 1 etiket gerekli`);
+                    errors.push(`Satır ${i + 1}: Etiket gerekli`);
                     continue;
                 }
 
@@ -2814,7 +3105,7 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                     successCount++;
                 } catch (error) {
                     errorCount++;
-                    errors.push(`Satır ${i + 1}: Veritabanı hatası`);
+                    errors.push(`Satır ${i + 1}: Hata`);
                 }
             }
 
@@ -2825,7 +3116,7 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
             let resultHTML = `
                 <div class="admin-section">
                     <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 15px;">📊 Sonuç</h4>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                         <div class="stat-card">
                             <div class="stat-value" style="color: var(--success);">${successCount}</div>
                             <div class="stat-label">Başarılı</div>
@@ -2835,22 +3126,10 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                             <div class="stat-label">Hatalı</div>
                         </div>
                     </div>
+                </div>
             `;
 
-            if (errors.length > 0) {
-                resultHTML += `
-                    <div style="background: var(--darker); padding: 15px; border-radius: 10px; border-left: 3px solid var(--danger);">
-                        <strong style="color: var(--danger); display: block; margin-bottom: 10px;">❌ Hatalar:</strong>
-                        <ul style="color: var(--text-muted); font-size: 0.85rem; list-style-position: inside;">
-                            ${errors.map(err => `<li style="margin-bottom: 5px;">${err}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-
-            resultHTML += '</div>';
             document.getElementById('bulk-result').innerHTML = resultHTML;
-
             updateAdminStats();
             
             if (successCount > 0) {
@@ -2932,14 +3211,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                                 '✅ Firebase etkinleştirilmiş ve çalışıyor!' : 
                                 '❌ Firebase yapılandırılmamış. Local mod aktif.'}
                         </p>
-                    </div>
-                    <div class="firebase-warning" style="margin-top: 15px;">
-                        <strong>⚠️ Google Giriş Hatası Çözümü:</strong><br>
-                        Eğer "auth/unauthorized-domain" hatası alıyorsanız:<br>
-                        1. Firebase Console'a gidin<br>
-                        2. Authentication > Settings > Authorized domains<br>
-                        3. Bu domain'i ekleyin: ${window.location.hostname}<br>
-                        4. Sayfayı yenileyin
                     </div>
                 </div>
             `;
@@ -3023,7 +3294,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                 return;
             }
 
-            // URL kontrolü (düzenlemede mevcut içeriğin URL'si hariç)
             const existingContent = window.shaplatState.contents.find(c => 
                 c.url.toLowerCase() === url.toLowerCase() && 
                 c.id !== window.shaplatState.editingContentId
@@ -3050,7 +3320,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
             if (window.shaplatState.editingContentId) {
                 const content = window.shaplatState.contents.find(c => c.id === window.shaplatState.editingContentId);
                 
-                // Rating ve diğer istatistikleri koru
                 contentData.rating = content.rating;
                 contentData.ratingCount = content.ratingCount;
                 contentData.viewCount = content.viewCount;
